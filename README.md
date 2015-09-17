@@ -1,3 +1,3 @@
 # LibAC
 
-Source code for book (http://www.atc.uniovi.es/libros/arquitectura/)[Prácticas de Arquitectura de Computadores y Sistemas Operativos]
+Source code for book [Prácticas de Arquitectura de Computadores y Sistemas Operativos](http://www.atc.uniovi.es/libros/arquitectura/).
