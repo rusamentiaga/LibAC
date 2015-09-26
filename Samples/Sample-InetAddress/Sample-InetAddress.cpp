@@ -20,7 +20,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		AC::ScopedWinSock UsingWinSock;
 		AC::InetAddress Address(URL, PORT);
 
-		_tprintf(_T("Dirección: %s"), Address.Str().c_str());
+		_tprintf(_T("Dirección: %s\n"), Address.Str().c_str());
 	}
 	catch(std::exception& ex)
 	{

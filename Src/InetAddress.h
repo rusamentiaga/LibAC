@@ -2,6 +2,7 @@
 
 #include <winsock2.h>
 #include <windows.h>
+#include <Ws2tcpip.h>
 
 #include "Exception.h"
 #include "tstring.h"
@@ -21,21 +22,22 @@ namespace AC
 
 		InetAddress(tstring Address, unsigned short Port)
 		{
-			std::string AddressAnsi = tstringTostring(Address);
+			ADDRINFOT* AddrInfoResult = NULL;
 
-			m_Addr.sin_family = AF_INET;
-			m_Addr.sin_port = htons(Port);
-			m_Addr.sin_addr.s_addr = inet_addr(AddressAnsi.c_str());
+			ADDRINFOT Hints;
+			memset(&Hints, 0, sizeof(Hints));
+			Hints.ai_family = AF_INET;
 
-			if (m_Addr.sin_addr.s_addr == INADDR_NONE)
+			if (GetAddrInfo(Address.c_str(), NULL, &Hints, &AddrInfoResult) != 0)
+				throw Exception() << StrError(GetLastError());
+
+			for (ADDRINFOT* ptr = AddrInfoResult; ptr != NULL; ptr = ptr->ai_next)
 			{
-				struct hostent *hp;
-				hp = (struct hostent *)gethostbyname(AddressAnsi.c_str());
-				if (hp == NULL)
-					throw Exception() << StrError(GetLastError());
-				else 
-					memcpy((void*)&m_Addr.sin_addr,(void *)hp->h_addr_list[0], 
-						sizeof(m_Addr.sin_addr));
+				if (ptr->ai_family == AF_INET)
+				{
+					m_Addr = *(struct sockaddr_in *) ptr->ai_addr;
+					m_Addr.sin_port = htons(Port);
+				}
 			}
 		}
 
@@ -53,8 +55,13 @@ namespace AC
 
 		tstring Str() const
 		{
+			TCHAR IpStr[INET_ADDRSTRLEN];
+
+			if (InetNtop(AF_INET, (PVOID)(&m_Addr.sin_addr), IpStr, INET_ADDRSTRLEN) == NULL)
+				throw Exception() << StrError(GetLastError());
+
 			tostringstream os;
-			os << inet_ntoa(m_Addr.sin_addr) << _T(":") << ntohs(m_Addr.sin_port);
+			os << IpStr << _T(":") << ntohs(m_Addr.sin_port);
 			return os.str();
 		}
 

@@ -1,0 +1,7 @@
+*.idb
+*.lastbuildstate
+*.tlog
+*.ipch
+*.res
+*.opensdf
+*.sdf
