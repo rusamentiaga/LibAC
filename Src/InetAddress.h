@@ -39,6 +39,7 @@ namespace AC
 					m_Addr.sin_port = htons(Port);
 				}
 			}
+			FreeAddrInfo(AddrInfoResult);
 		}
 
 		InetAddress(unsigned short Port)
